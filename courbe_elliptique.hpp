@@ -17,6 +17,7 @@ public:
     bool is_contained(int x, int y);
     
     int get_a();
+    
     //constructeur
     courbe_elliptique (int a, int b, int c, int d);
   
