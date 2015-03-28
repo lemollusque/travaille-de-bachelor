@@ -4,18 +4,46 @@
  *
  * Created on 27. février 2015, 23:07
  */
-#include <iostream>
+
+
 #include <cstdlib>
+#include <iostream>
+#include <chrono>
+#include <thread>
 #include "courbe_elliptique.hpp"
-using namespace std;
+#include "point.hpp"
+
 
 /*
  * 
  */
 int main(int argc, char** argv) {
-    courbe_elliptique nimp=courbe_elliptique(1, 2, 3, 4);
-    cout << "Hello World!" << endl;
-    cout << nimp.get_a()<< endl;
+    
+    
+ 
+    int p=8;                                    //un nombre de marsenne +1
+    point P(1, 3);
+    for(int i=1; i<22; ++i)
+    {
+        int m;
+        m=5;
+        courbe_elliptique courbe=courbe_elliptique(3,5, p-1);
+        if(courbe.MillerRabin(5)==1)
+        {
+        
+        
+        cout<<p-1<<" est premier ="<<endl;//courbe.trouver_m(P,courbe.mult(P,m))<<endl;
+                                          //actualise le nombre de mersenne
+        }
+        if(courbe.MillerRabin(5)==0)
+        {   
+            cout<<p-1<<"   nest probablement pas premier"<<endl;
+            
+        
+        }
+        p=p*2;
+    }
+    
     return 0;
 }
 
