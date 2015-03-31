@@ -1,10 +1,10 @@
 #include "courbe_elliptique.hpp"
 #include "point.hpp"
 #include <cmath>
-
+#include <cstdint>
 //element neutre (p+1, p+1)
 
-bool courbe_elliptique::MillerRabin(int k)          //http://2π.com/11/miller-rabin-primality-test    
+bool courbe_elliptique::MillerRabin(int64_t k)          //http://2π.com/11/miller-rabin-primality-test    
 {                                                   //vérifie si m_p est un nombre premier
    if(m_p == k) return true;
    int s, d, b, e, x;
@@ -40,7 +40,7 @@ bool courbe_elliptique::sing()                      //vérifie si la courbe est 
     return 4*m_a*m_a*m_a+27*m_b*m_b!=0;             //singuliere si return 0
 }
 
-int courbe_elliptique::eval(int x)                  //pour àvaluer le polynôme en x pour ensuite l'utiliser dans is_contained
+int64_t courbe_elliptique::eval(int64_t x)                  //pour àvaluer le polynôme en x pour ensuite l'utiliser dans is_contained
 {
     return x*x*x+x*m_a+m_b;
 }
@@ -50,7 +50,7 @@ bool courbe_elliptique::is_contained(point p)       //vérifie si un point est s
     {
         return 1;
     }
-    int a,b;                                        //on va comparer a=y^2 et b=f(x)
+    int64_t a,b;                                        //on va comparer a=y^2 et b=f(x)
     a=(p.get_y()*p.get_y())%m_p;
     b=eval(p.get_x())%m_p;
     if(a<=0)                                        //met a et b entre 0 et le nombre premier
@@ -66,19 +66,19 @@ bool courbe_elliptique::is_contained(point p)       //vérifie si un point est s
 }
 
 
-int courbe_elliptique::findInverse(int z)           //http://www.pagedon.com/extended-euclidean-algorithm-in-c/my_programming/
+int64_t courbe_elliptique::findInverse(int64_t z)           //http://www.pagedon.com/extended-euclidean-algorithm-in-c/my_programming/
                                                     //trouver un inverse de a dans Z/pZ
 {
-    int a=z;
+    int64_t a=z;
     if(a<0)
     {
         a=a+m_p;
     }
-int p=m_p;
-int x[3];
-int y[3];
-int quotient  = a / p;
-int remainder = a % p;
+int64_t p=m_p;
+int64_t x[3];
+int64_t y[3];
+int64_t quotient  = a / p;
+int64_t remainder = a % p;
 
 x[0] = 0;
 y[0] = 1;
@@ -161,7 +161,7 @@ point  courbe_elliptique::addition(point p1, point p2)  //addition de deux point
 point courbe_elliptique::mult_2(point p)   // multiplie un point par m
 {
     
-    int lambda,nu,new_x,new_y;
+    int64_t lambda,nu,new_x,new_y;
     
     try
 
@@ -179,12 +179,13 @@ point courbe_elliptique::mult_2(point p)   // multiplie un point par m
         lambda=((3*p.get_x()*p.get_x()+m_a)*findInverse(2*p.get_y()))%m_p;  //diviser=multiplier par linverse
         nu=(p.get_y()-lambda*p.get_x())%m_p;
         new_x=(lambda*lambda-p.get_x()-p.get_x())%m_p;
-        if(new_x<=0)                                                        //met x et y entre 0 et le nombre premier
+        new_y=(-lambda*new_x-nu)%m_p;
+        if(new_x<0)                                                        //met x et y entre 0 et le nombre premier
         {
             new_x=new_x+m_p;
         }
-        new_y=(-lambda*new_x-nu)%m_p;
-         if(new_y<=0)
+        
+         if(new_y<0)
         {
             new_y=new_y+m_p;
         }
@@ -203,17 +204,17 @@ point courbe_elliptique::mult_2(point p)   // multiplie un point par m
 }
     
     
-point courbe_elliptique::mult(point p, int m)               // multiplie un point par m
+point courbe_elliptique::mult(point p, int64_t m)               // multiplie un point par m
 {   
     point q(m_p+1, m_p+1);                                  //initialise à elem neutre
     
-    int remainder=m;
+    int64_t remainder=m;
     while(remainder>0)
     {
         
         point remainderpoint(p);   
    
-        int k=1;
+        int64_t k=1;
         while(2*k<=remainder)
         {
            remainderpoint=mult_2(remainderpoint);
@@ -228,9 +229,9 @@ point courbe_elliptique::mult(point p, int m)               // multiplie un poin
     return q;
 }
 
-int courbe_elliptique::trouver_m(point p,point mp)          //fonction pour retrouver la multiplication m
+int64_t courbe_elliptique::trouver_m(point p,point mp)          //fonction pour retrouver la multiplication m
 {
-    int k=1;
+    int64_t k=1;
     point remainder(p);
     while(remainder.get_x()!=mp.get_x() or remainder.get_y()!=mp.get_y())
     {
@@ -242,7 +243,7 @@ int courbe_elliptique::trouver_m(point p,point mp)          //fonction pour retr
 
 
 /****************************constructeur****************************************/
-courbe_elliptique::courbe_elliptique(int a, int b, int p)
+courbe_elliptique::courbe_elliptique(int64_t a, int64_t b, int64_t p)
 {
     m_a=a;
     m_b=b;
