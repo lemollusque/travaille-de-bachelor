@@ -11,7 +11,7 @@
 #include <exception>
 #include <iostream>
 #include "point.hpp"
-
+#include <cstdint>
 using namespace std;
 
 
@@ -19,20 +19,21 @@ using namespace std;
 class courbe_elliptique 
 {
 private:
-    int m_a,m_b,m_p;                    //m_a le coeff devant x et m_b la constante, m_p le nombre premier du corps Fp
+    int64_t m_a,m_b;
+    int64_t  m_p;                    //m_a le coeff devant x et m_b la constante, m_p le nombre premier du corps Fp
 public:
-    bool MillerRabin(int k);     //vérfie si m_p est premier
+    bool MillerRabin(int64_t k);     //vérfie si m_p est premier
     bool sing();                        //vérifie si la courbe est singuliere ou non
-    int eval(int x);                    //pour àvaluer le polynôme en x pour ensuite l'utiliser dans is_contained
+    int64_t eval(int64_t x);                    //pour àvaluer le polynôme en x pour ensuite l'utiliser dans is_contained
     bool is_contained(point p);         //vérifie si un point est sur la courbe
-    int findInverse(int a);             //trouve un inverse de a dans Z/pZ
+    int64_t findInverse(int64_t a);             //trouve un inverse de a dans Z/pZ
 
     point addition(point p1, point p2); //addition de deux point
     point mult_2(point p);              //multiplication par 2
-    point mult(point p, int m);         //multiplication par m
-    int trouver_m(point p,point mp);    //fonction pour retrouver la multiplication m
+    point mult(point p, int64_t m);         //multiplication par m
+    int64_t trouver_m(point p,point mp);    //fonction pour retrouver la multiplication m
     //constructeur
-    courbe_elliptique (int a, int b, int p);
+    courbe_elliptique (int64_t a, int64_t b, int64_t p);
   
     
 };
