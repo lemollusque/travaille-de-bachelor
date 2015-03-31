@@ -1,10 +1,10 @@
 #include "point.hpp"
 
-int point::get_x()               //fonctions pour avoir acces a x et y
+int64_t point::get_x()               //fonctions pour avoir acces a x et y
 {
     return m_x;
 }
-int point::get_y()
+int64_t point::get_y()
 {
     return m_y;
 }
@@ -13,7 +13,7 @@ int point::get_y()
 
 
 /*******constructeurs**************/
-point::point(int x, int y)
+point::point(int64_t x, int64_t y)
 {
     m_x=x;
     m_y=y;
