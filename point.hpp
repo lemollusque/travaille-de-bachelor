@@ -11,13 +11,13 @@
 class point
 {
 private:
-    int m_x;
-    int m_y;
+    int64_t m_x;
+    int64_t m_y;
 public:     
-    int get_x();                              //fonctions pour avoir acces a x et y
-    int get_y();
+    int64_t get_x();                              //fonctions pour avoir acces a x et y
+    int64_t get_y();
     /*constructeur*/
-    point (int x, int y);
+    point (int64_t x, int64_t y);
     point(point const& autre);                   //constructeur de copie
 };
 
