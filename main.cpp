@@ -1,3 +1,6 @@
+
+
+
 /* 
  * File:   main.cpp
  * Author: Bastian
@@ -14,36 +17,42 @@
 #include "point.hpp"
 
 
-/*
- * 
- */
+ 
+
 int main(int argc, char** argv) {
     
     
- 
-    int p=8;                                    //un nombre de marsenne +1
+
+
+    int k = 20;
+    int p = 8; //un nombre de mèrsenne +1
     point P(1, 3);
-    for(int i=1; i<22; ++i)
-    {
-        int m;
-        m=5;
-        courbe_elliptique courbe=courbe_elliptique(3,5, p-1);
-        if(courbe.MillerRabin(5)==1)
-        {
-        
-        
-        cout<<p-1<<" est premier ="<<endl;//courbe.trouver_m(P,courbe.mult(P,m))<<endl;
-                                          //actualise le nombre de mersenne
-        }
-        if(courbe.MillerRabin(5)==0)
-        {   
-            cout<<p-1<<"   nest probablement pas premier"<<endl;
-            
-        
-        }
-        p=p*2;
-    }
     
+    for (int i = 1; i < 22; ++i) {
+        int m;
+        m = 5;
+        courbe_elliptique courbe = courbe_elliptique(3, 5, p - 1);
+        
+        int isprime = 1;
+        for(int j=0;j<k;j++)
+        {
+            int a = (rand()%(p-2))+1;
+            if(courbe.MillerRabin(a)==0)
+            {
+                cout << p - 1 << "   forcement pas premier" << endl;
+                isprime=0;
+                break;
+            }
+        }
+       
+        if (isprime) {
+            cout << p - 1 << " probablement premier et m =" <<courbe.trouver_m(P,courbe.mult(P,m))<<endl;
+            //actualise le nombre de mersenne
+        }
+        p = p * 2;
+    }
+
+ 
     return 0;
 }
 
