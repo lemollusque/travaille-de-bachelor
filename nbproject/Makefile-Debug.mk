@@ -21,8 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=Cygwin_4.x-Windows
-CND_DLIB_EXT=dll
+CND_PLATFORM=GNU-Linux-x86
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -37,15 +36,17 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/courbe_elliptique.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/point.o
+	${OBJECTDIR}/point.o \
+	${OBJECTDIR}/multmodp.o \
+	${OBJECTDIR}/gnu_plot_example.o
 
 
 # C Compiler Flags
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-std=c++11
-CXXFLAGS=-std=c++11
+CCFLAGS=-std=c++11 -lgmp -lgmpxx
+CXXFLAGS=-std=c++11 -lgmp -lgmpxx
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -54,30 +55,40 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/cygdrive/C/cygwin/home/Bastian/gnuplot2/gnuplot_i/src
+LDLIBSOPTIONS=-L/C/cygwin/home/Bastian/gnuplot2/gnuplot_i/src -L/usr/include/x86_64-linux-gnu -L/usr/include -lgmp -lgmpxx
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/projet.exe
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/travaille-de-bachelor
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/projet.exe: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/travaille-de-bachelor: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/projet ${OBJECTFILES} ${LDLIBSOPTIONS}
+	g++  -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/travaille-de-bachelor ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/courbe_elliptique.o: courbe_elliptique.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/courbe_elliptique.o courbe_elliptique.cpp
+	${RM} $@.d
+	$(COMPILE.cc) -g -I/usr/include/c++ -I/usr/include/x86_64-linux-gnu -I/usr/include/c++/4.8 -MMD -MP -MF $@.d -o ${OBJECTDIR}/courbe_elliptique.o courbe_elliptique.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	${RM} $@.d
+	$(COMPILE.cc) -g -I/usr/include/c++ -I/usr/include/x86_64-linux-gnu -I/usr/include/c++/4.8 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/point.o: point.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/point.o point.cpp
+	${RM} $@.d
+	$(COMPILE.cc) -g -I/usr/include/c++ -I/usr/include/x86_64-linux-gnu -I/usr/include/c++/4.8 -MMD -MP -MF $@.d -o ${OBJECTDIR}/point.o point.cpp
+
+${OBJECTDIR}/multmodp.o: multmodp.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I/usr/include/c++ -I/usr/include/x86_64-linux-gnu -I/usr/include/c++/4.8 -MMD -MP -MF $@.d -o ${OBJECTDIR}/multmodp.o multmodp.cpp
+
+${OBJECTDIR}/gnu_plot_example.o: gnu_plot_example.cc 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I/usr/include/c++ -I/usr/include/x86_64-linux-gnu -I/usr/include/c++/4.8 -MMD -MP -MF $@.d -o ${OBJECTDIR}/gnu_plot_example.o gnu_plot_example.cc
 
 # Subprojects
 .build-subprojects:
@@ -85,7 +96,7 @@ ${OBJECTDIR}/point.o: point.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/projet.exe
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/travaille-de-bachelor
 
 # Subprojects
 .clean-subprojects:

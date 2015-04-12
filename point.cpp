@@ -1,10 +1,12 @@
 #include "point.hpp"
+#include <gmpxx.h>
+#include <gmp.h>
 
-int64_t point::get_x()               //fonctions pour avoir acces a x et y
+mpz_class point::get_x()               //fonctions pour avoir acces a x et y
 {
     return m_x;
 }
-int64_t point::get_y()
+mpz_class point::get_y()
 {
     return m_y;
 }
@@ -13,7 +15,7 @@ int64_t point::get_y()
 
 
 /*******constructeurs**************/
-point::point(int64_t x, int64_t y)
+point::point(mpz_class x, mpz_class y)
 {
     m_x=x;
     m_y=y;

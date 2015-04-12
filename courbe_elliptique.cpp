@@ -2,47 +2,48 @@
 #include "point.hpp"
 #include <cmath>
 #include <cstdint>
+#include "multmodp.hpp"
+#include <gmpxx.h>
+#include <gmp.h>
 //element neutre (p+1, p+1)
 
-bool courbe_elliptique::MillerRabin(int64_t k)          //http://2π.com/11/miller-rabin-primality-test    
-{                                                   //vérifie si m_p est un nombre premier
-   if(m_p == k) return true;
-   int s, d, b, e, x;
- 
-   // Factor n-1 as d 2^s
-   for(s = 0, d = m_p - 1; !(d & 1); s++)
-      d >>= 1;
- 
-   // x = k^d mod n using exponentiation by squaring
-   // The squaring overflows for n >= 2^32
-   for(x = 1, b = k % m_p, e = d; e; e >>= 1) {
-      if(e & 1)
-         x = (x * b) % m_p;
-      b = (b * b) % m_p;
-   }
- 
-   // Verify k^(d 2^[0…s-1]) mod n != 1
-   if(x == 1 || x == m_p-1)
-      return true;
-   while(s-- > 1) {
-      x = (x * x) % m_p;
-      if(x == 1)
-         return false;
-      if(x == m_p-1)
-         return true;
-   }
-   return false;
+mpz_class courbe_elliptique::mmp(mpz_class a, mpz_class b) //fonction qui multiplie en modulant apres chaque étape
+{
+    a=a%m_p;
+    b=b%m_p;
+    if(a<0)
+    {
+        a=a+m_p;
+    }
+    if(b<0)
+    {
+        b=b+m_p;
+    }
+    mpz_class resultat=0;
+    
+    if(a%m_p==0 or b%m_p==0)
+    {
+        return  resultat;
+    }
+   
+    
+    for(int i=1; i<=b; ++i)
+    {
+        resultat=(resultat+a)%m_p;
+    }
+    return resultat;
 }
+/****************************************************************************************************/
 
 bool courbe_elliptique::sing()                      //vérifie si la courbe est singuliere ou non
 {   
     
-    return 4*m_a*m_a*m_a+27*m_b*m_b!=0;             //singuliere si return 0
+    return 4*mmp(mmp(m_a,m_a),m_a)+mmp(mmp(27,m_b),m_b)!=0;             //singuliere si return 0
 }
 
-int64_t courbe_elliptique::eval(int64_t x)                  //pour àvaluer le polynôme en x pour ensuite l'utiliser dans is_contained
+mpz_class courbe_elliptique::eval(mpz_class x)                  //pour àvaluer le polynôme en x pour ensuite l'utiliser dans is_contained
 {
-    return x*x*x+x*m_a+m_b;
+    return mmp(mmp(x,x),x)+mmp(x,m_a)+m_b;
 }
 bool courbe_elliptique::is_contained(point p)       //vérifie si un point est sur la courbe
 {   
@@ -50,7 +51,7 @@ bool courbe_elliptique::is_contained(point p)       //vérifie si un point est s
     {
         return 1;
     }
-    int64_t a,b;                                        //on va comparer a=y^2 et b=f(x)
+    mpz_class a,b;                                        //on va comparer a=y^2 et b=f(x)
     a=(p.get_y()*p.get_y())%m_p;
     b=eval(p.get_x())%m_p;
     if(a<=0)                                        //met a et b entre 0 et le nombre premier
@@ -66,19 +67,19 @@ bool courbe_elliptique::is_contained(point p)       //vérifie si un point est s
 }
 
 
-int64_t courbe_elliptique::findInverse(int64_t z)           //http://www.pagedon.com/extended-euclidean-algorithm-in-c/my_programming/
+mpz_class courbe_elliptique::findInverse(mpz_class z)           //http://www.pagedon.com/extended-euclidean-algorithm-in-c/my_programming/
                                                     //trouver un inverse de a dans Z/pZ
 {
-    int64_t a=z;
+    mpz_class a=z;
     if(a<0)
     {
         a=a+m_p;
     }
-int64_t p=m_p;
-int64_t x[3];
-int64_t y[3];
-int64_t quotient  = a / p;
-int64_t remainder = a % p;
+mpz_class p=m_p;
+mpz_class x[3];
+mpz_class y[3];
+mpz_class quotient  = a / p;
+mpz_class remainder = a % p;
 
 x[0] = 0;
 y[0] = 1;
@@ -118,12 +119,12 @@ point  courbe_elliptique::addition(point p1, point p2)  //addition de deux point
         return p1;
     }
       
-    int lambda,nu,x3,y3;
+    mpz_class lambda,nu,x3,y3;
     try
 
     {   
-        if(sing()==0)                                                           //test si la courbe est singuliere
-            throw string("courbe singuliere !");
+        //if(sing()==0)                                                           //test si la courbe est singuliere
+          //  throw string("courbe singuliere !");
         if(is_contained(p1)==0 or is_contained(p2)==0)                          //verifie si le point est sur la courbe
             throw string("un des points n'est pas sur la courbe");
         if(0 == (p2.get_x()-p1.get_x())%m_p)                                    //verifie si il y a une division par 0 modulo p dans le calcul
@@ -132,10 +133,10 @@ point  courbe_elliptique::addition(point p1, point p2)  //addition de deux point
             return P;
         };
         
-    lambda=(p2.get_y()-p1.get_y())*findInverse(p2.get_x()-p1.get_x())%m_p;
-    nu=(p1.get_y()-lambda*p1.get_x())%m_p;
-    x3=(lambda*lambda-p1.get_x()-p2.get_x())%m_p;
-    y3=(-lambda*x3-nu)%m_p;
+    lambda=mmp(p2.get_y()-p1.get_y(),findInverse(p2.get_x()-p1.get_x()));
+    nu=(p1.get_y()-mmp(lambda,p1.get_x()))%m_p;
+    x3=(mmp(lambda,lambda)-p1.get_x()-p2.get_x())%m_p;
+    y3=(-mmp(lambda,x3)-nu)%m_p;
     if(x3<0)
     {
         x3=x3+m_p;
@@ -161,7 +162,7 @@ point  courbe_elliptique::addition(point p1, point p2)  //addition de deux point
 point courbe_elliptique::mult_2(point p)   // multiplie un point par m
 {
     
-    int64_t lambda,nu,new_x,new_y;
+    mpz_class lambda,nu,new_x,new_y;
     
     try
 
@@ -176,10 +177,13 @@ point courbe_elliptique::mult_2(point p)   // multiplie un point par m
             return P;
         };
                                                                             //calcul le nouveau point
-        lambda=((3*p.get_x()*p.get_x()+m_a)*findInverse(2*p.get_y()))%m_p;  //diviser=multiplier par linverse
-        nu=(p.get_y()-lambda*p.get_x())%m_p;
-        new_x=(lambda*lambda-p.get_x()-p.get_x())%m_p;
-        new_y=(-lambda*new_x-nu)%m_p;
+        
+        lambda=mmp(p.get_x(), p.get_x());
+        lambda=(((lambda+lambda)%m_p+lambda)%m_p+m_a)%m_p;
+        lambda=mmp(lambda, findInverse((2*p.get_y())%m_p));
+        nu=p.get_y()-mmp(lambda, p.get_x());
+        new_x=(mmp(lambda, lambda)-p.get_x()-p.get_x())%m_p;
+        new_y=(-mmp(lambda, new_x)-nu)%m_p;
         if(new_x<0)                                                        //met x et y entre 0 et le nombre premier
         {
             new_x=new_x+m_p;
@@ -204,17 +208,17 @@ point courbe_elliptique::mult_2(point p)   // multiplie un point par m
 }
     
     
-point courbe_elliptique::mult(point p, int64_t m)               // multiplie un point par m
+point courbe_elliptique::mult(point p, mpz_class m)               // multiplie un point par m
 {   
     point q(m_p+1, m_p+1);                                  //initialise à elem neutre
     
-    int64_t remainder=m;
+    mpz_class remainder=m;
     while(remainder>0)
     {
         
         point remainderpoint(p);   
    
-        int64_t k=1;
+        mpz_class k=1;
         while(2*k<=remainder)
         {
            remainderpoint=mult_2(remainderpoint);
@@ -229,9 +233,9 @@ point courbe_elliptique::mult(point p, int64_t m)               // multiplie un 
     return q;
 }
 
-int64_t courbe_elliptique::trouver_m(point p,point mp)          //fonction pour retrouver la multiplication m
+mpz_class courbe_elliptique::trouver_m(point p,point mp)          //fonction pour retrouver la multiplication m
 {
-    int64_t k=1;
+    mpz_class k=1;
     point remainder(p);
     while(remainder.get_x()!=mp.get_x() or remainder.get_y()!=mp.get_y())
     {
@@ -243,7 +247,7 @@ int64_t courbe_elliptique::trouver_m(point p,point mp)          //fonction pour 
 
 
 /****************************constructeur****************************************/
-courbe_elliptique::courbe_elliptique(int64_t a, int64_t b, int64_t p)
+courbe_elliptique::courbe_elliptique(mpz_class a, mpz_class b, mpz_class p)
 {
     m_a=a;
     m_b=b;

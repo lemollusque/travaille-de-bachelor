@@ -12,6 +12,8 @@
 #include <iostream>
 #include "point.hpp"
 #include <cstdint>
+#include <gmpxx.h>
+#include <gmp.h>
 using namespace std;
 
 
@@ -19,21 +21,22 @@ using namespace std;
 class courbe_elliptique 
 {
 private:
-    int64_t m_a,m_b;
-    int64_t  m_p;                    //m_a le coeff devant x et m_b la constante, m_p le nombre premier du corps Fp
+    mpz_class m_a,m_b;
+    mpz_class  m_p;                    //m_a le coeff devant x et m_b la constante, m_p le nombre premier du corps Fp
 public:
-    bool MillerRabin(int64_t k);     //vérfie si m_p est premier
+    mpz_class mmp(mpz_class a, mpz_class b);
+    bool MillerRabin(mpz_class k);     //vérfie si m_p est premier
     bool sing();                        //vérifie si la courbe est singuliere ou non
-    int64_t eval(int64_t x);                    //pour àvaluer le polynôme en x pour ensuite l'utiliser dans is_contained
+    mpz_class eval(mpz_class x);                    //pour àvaluer le polynôme en x pour ensuite l'utiliser dans is_contained
     bool is_contained(point p);         //vérifie si un point est sur la courbe
-    int64_t findInverse(int64_t a);             //trouve un inverse de a dans Z/pZ
+    mpz_class findInverse(mpz_class a);             //trouve un inverse de a dans Z/pZ
 
     point addition(point p1, point p2); //addition de deux point
     point mult_2(point p);              //multiplication par 2
-    point mult(point p, int64_t m);         //multiplication par m
-    int64_t trouver_m(point p,point mp);    //fonction pour retrouver la multiplication m
+    point mult(point p, mpz_class m);         //multiplication par m
+    mpz_class trouver_m(point p,point mp);    //fonction pour retrouver la multiplication m
     //constructeur
-    courbe_elliptique (int64_t a, int64_t b, int64_t p);
+    courbe_elliptique (mpz_class a, mpz_class b, mpz_class p);
   
     
 };

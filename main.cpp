@@ -1,6 +1,5 @@
 
 
-
 /* 
  * File:   main.cpp
  * Author: Bastian
@@ -8,51 +7,77 @@
  * Created on 27. février 2015, 23:07
  */
 
-
+ 
+#include <gmp.h>
 #include <cstdlib>
 #include <iostream>
+#include<string>
 #include <chrono>
 #include <thread>
 #include "courbe_elliptique.hpp"
 #include "point.hpp"
+#include "multmodp.hpp"
+#include <gmpxx.h>
+#include <vector>
+#include <ctime>
+
+
 
 
  
 
 int main(int argc, char** argv) {
+   
     
     
+    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+    start = std::chrono::high_resolution_clock::now();
 
-
-    int k = 20;
-    int p = 8; //un nombre de mèrsenne +1
-    point P(1, 3);
-    
-    for (int i = 1; i < 22; ++i) {
-        int m;
-        m = 5;
-        courbe_elliptique courbe = courbe_elliptique(3, 5, p - 1);
-        
-        int isprime = 1;
-        for(int j=0;j<k;j++)
+   vector< mpz_class> tab(1,2);                                                                                 //algorithme crible d'Eratosthène
+    for(int i=3; i<100; ++i)
+    {
+        int remainder(1);
+        for(int j=0; j<tab.size(); ++j)
         {
-            int a = (rand()%(p-2))+1;
-            if(courbe.MillerRabin(a)==0)
+            
+            if (i%tab[j]==0)
             {
-                cout << p - 1 << "   forcement pas premier" << endl;
-                isprime=0;
-                break;
+                remainder=0;
             }
+            
+        }
+        if (remainder==1)
+        {
+            tab.push_back(i);
+        }
+    }
+    
+
+   
+   for(int i=0; i<tab.size(); ++i)
+   {
+       
+       
+        point P(1, 3);
+        mpz_class  m = 7;
+        courbe_elliptique courbe = courbe_elliptique(3, 5, tab[i]);
+        if(courbe.sing()==1)
+        {
+               
+                cout << courbe.trouver_m(P,courbe.mult(P,m))<<endl;
         }
        
-        if (isprime) {
-            cout << p - 1 << " probablement premier et m =" <<courbe.trouver_m(P,courbe.mult(P,m))<<endl;
-            //actualise le nombre de mersenne
-        }
-        p = p * 2;
-    }
-
+   }
+  
+    end = std::chrono::high_resolution_clock::now();
  
+    int elapsed_mseconds = std::chrono::duration_cast<std::chrono::milliseconds>
+                             (end-start).count();
+    std::time_t end_time = std::chrono::high_resolution_clock::to_time_t(end);
+    std::cout << (end-start).count() << endl;
+    std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_mseconds << "ms\n";
+
+    
     return 0;
 }
-

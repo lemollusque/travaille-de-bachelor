@@ -8,16 +8,18 @@
 #ifndef POINT_HPP
 #define	POINT_HPP
 #include <iostream>
+#include <gmpxx.h>
+#include <gmp.h>
 class point
 {
 private:
-    int64_t m_x;
-    int64_t m_y;
+    mpz_class m_x;
+    mpz_class m_y;
 public:     
-    int64_t get_x();                              //fonctions pour avoir acces a x et y
-    int64_t get_y();
+    mpz_class get_x();                              //fonctions pour avoir acces a x et y
+    mpz_class get_y();
     /*constructeur*/
-    point (int64_t x, int64_t y);
+    point (mpz_class x, mpz_class y);
     point(point const& autre);                   //constructeur de copie
 };
 
